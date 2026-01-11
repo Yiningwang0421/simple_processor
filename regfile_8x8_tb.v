@@ -42,6 +42,7 @@ module tb_regfile_8x8;
     #20;
     @(posedge clk);
     rst_n = 1;
+    $display("[%0t] RESET DEASSERTED rst_n=%0d", $time, rst_n);
 
     #20;
     @(posedge clk);
@@ -68,6 +69,19 @@ module tb_regfile_8x8;
       $display("ERROR: R3 = %h, expected 55", rd_a);
     else
       $display("PASS: R3 = %h", rd_a);
+
+    // edge case: read-during-write same register
+    we = 1;
+    wa = 5;
+    wd = 8'hAA;
+    ra = 5;
+    #10;
+    @(posedge clk);
+    $display("[%0t] WRITE EDGE (R5) & READ R5: we=%0d wa=%0d wd=%02h ra=%0d rst_n=%0d",
+             $time, we, wa, wd, ra, rst_n);
+    we = 0;
+    #1;
+    $display("[%0t] READ ra=%0d rd_a=%02h", $time, ra, rd_a);
 
     #20;
     $finish;
